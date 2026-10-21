@@ -17,7 +17,7 @@
       "de": "Jackery SolarVault 3 Speichersysteme per lokalem MQTT überwachen und steuern"
     },
     "authors": [
-      "Adapter Author <you@example.com>"
+      "steinhuegel"
     ],
     "keywords": [
       "jackery",
@@ -35,8 +35,8 @@
     "main": "main.js",
     "icon": "jackery-solarvault.png",
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/your-name/ioBroker.jackery-solarvault/main/admin/jackery-solarvault.png",
-    "readme": "https://github.com/your-name/ioBroker.jackery-solarvault/blob/main/README.md",
+    "extIcon": "https://raw.githubusercontent.com/steinhuegel/ioBroker.jackery-solarvault/main/admin/jackery-solarvault.png",
+    "readme": "https://github.com/steinhuegel/ioBroker.jackery-solarvault/blob/main/README.md",
     "loglevel": "info",
     "tier": 3,
     "mode": "daemon",

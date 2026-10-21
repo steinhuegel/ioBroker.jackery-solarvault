@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "description": "ioBroker adapter for Jackery SolarVault 3 series (local MQTT)",
   "author": {
-    "name": "Adapter Author",
-    "email": "you@example.com"
+    "name": "steinhuegel"
   },
-  "homepage": "https://github.com/your-name/ioBroker.jackery-solarvault",
+  "homepage": "https://github.com/steinhuegel/ioBroker.jackery-solarvault",
   "license": "MIT",
   "keywords": [
     "ioBroker",
@@ -19,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-name/ioBroker.jackery-solarvault.git"
+    "url": "git+https://github.com/steinhuegel/ioBroker.jackery-solarvault.git"
   },
   "engines": {
     "node": ">=18"
@@ -42,7 +41,7 @@
     "check": "node --check main.js && node --check lib/protocol.js && node --check lib/datapoints.js"
   },
   "bugs": {
-    "url": "https://github.com/your-name/ioBroker.jackery-solarvault/issues"
+    "url": "https://github.com/steinhuegel/ioBroker.jackery-solarvault/issues"
   },
   "readmeFilename": "README.md"
 }
