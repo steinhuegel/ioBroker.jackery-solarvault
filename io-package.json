@@ -1,0 +1,102 @@
+{
+  "common": {
+    "name": "jackery-solarvault",
+    "version": "0.1.0",
+    "news": {
+      "0.1.0": {
+        "en": "Initial release: port of the official Jackery Home Assistant integration",
+        "de": "Erste Version: Portierung der offiziellen Jackery Home-Assistant-Integration"
+      }
+    },
+    "titleLang": {
+      "en": "Jackery SolarVault",
+      "de": "Jackery SolarVault"
+    },
+    "desc": {
+      "en": "Monitor and control Jackery SolarVault 3 energy storage systems via local MQTT",
+      "de": "Jackery SolarVault 3 Speichersysteme per lokalem MQTT überwachen und steuern"
+    },
+    "authors": [
+      "Adapter Author <you@example.com>"
+    ],
+    "keywords": [
+      "jackery",
+      "solarvault",
+      "mqtt",
+      "energy",
+      "battery",
+      "solar"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "jackery-solarvault.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/your-name/ioBroker.jackery-solarvault/main/admin/jackery-solarvault.png",
+    "readme": "https://github.com/your-name/ioBroker.jackery-solarvault/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "energy",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "protectedNative": [
+      "mqttPassword",
+      "devices"
+    ],
+    "encryptedNative": [
+      "mqttPassword"
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.19"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=6.17.14"
+      }
+    ]
+  },
+  "native": {
+    "mqttHost": "127.0.0.1",
+    "mqttPort": 1883,
+    "mqttTls": false,
+    "mqttRejectUnauthorized": true,
+    "mqttUser": "",
+    "mqttPassword": "",
+    "topicPrefix": "hb",
+    "devices": []
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Connected to MQTT broker",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
+}
