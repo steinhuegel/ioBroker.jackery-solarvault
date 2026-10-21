@@ -1,0 +1,110 @@
+{
+  "i18n": false,
+  "type": "tabs",
+  "items": {
+    "_mqtt": {
+      "type": "panel",
+      "label": "MQTT broker",
+      "items": {
+        "_hint": {
+          "type": "staticText",
+          "text": "The SolarVault publishes to your MQTT broker. Enter the same broker in the Jackery app (Device details > Settings > MQTT). The app then generates the token used below.",
+          "newLine": true,
+          "xs": 12
+        },
+        "mqttHost": {
+          "type": "text",
+          "label": "Broker host / IP",
+          "newLine": true,
+          "xs": 12,
+          "sm": 6,
+          "md": 4
+        },
+        "mqttPort": {
+          "type": "number",
+          "label": "Port",
+          "min": 1,
+          "max": 65535,
+          "xs": 12,
+          "sm": 6,
+          "md": 2
+        },
+        "mqttUser": {
+          "type": "text",
+          "label": "Username",
+          "newLine": true,
+          "xs": 12,
+          "sm": 6,
+          "md": 3
+        },
+        "mqttPassword": {
+          "type": "password",
+          "label": "Password",
+          "visible": true,
+          "xs": 12,
+          "sm": 6,
+          "md": 3
+        },
+        "mqttTls": {
+          "type": "checkbox",
+          "label": "Use TLS",
+          "newLine": true,
+          "xs": 12,
+          "sm": 6,
+          "md": 3
+        },
+        "mqttRejectUnauthorized": {
+          "type": "checkbox",
+          "label": "Verify TLS certificate",
+          "hidden": "!data.mqttTls",
+          "xs": 12,
+          "sm": 6,
+          "md": 3
+        },
+        "topicPrefix": {
+          "type": "text",
+          "label": "Topic prefix (default: hb)",
+          "newLine": true,
+          "xs": 12,
+          "sm": 6,
+          "md": 3
+        }
+      }
+    },
+    "_devices": {
+      "type": "panel",
+      "label": "Devices",
+      "items": {
+        "devices": {
+          "type": "table",
+          "label": "SolarVault hosts",
+          "newLine": true,
+          "xs": 12,
+          "showSecondAddAt": 5,
+          "items": [
+            {
+              "type": "checkbox",
+              "attr": "enabled",
+              "title": "Active",
+              "width": "10%",
+              "default": true
+            },
+            {
+              "type": "text",
+              "attr": "sn",
+              "title": "Serial number",
+              "width": "40%"
+            },
+            {
+              "type": "password",
+              "attr": "token",
+              "title": "Token",
+              "width": "50%",
+              "visible": true
+            }
+          ]
+        }
+      }
+    }
+  }
+}
