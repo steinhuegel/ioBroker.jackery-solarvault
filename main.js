@@ -435,7 +435,7 @@ class JackerySolarvault extends utils.Adapter {
         }
         let v = value;
         if (isObj(v)) {
-            v = pyOr(v.pvPw, v.w, v.power);
+            v = firstDefined(v.pvPw, v.w, v.power);
         }
         const n = Number(v);
         if (!Number.isFinite(n)) {
