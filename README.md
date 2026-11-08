@@ -1,5 +1,7 @@
 # ioBroker.jackery-solarvault
 
+*[Deutsche Version](README.de.md)*
+
 ioBroker adapter for **Jackery SolarVault 3** energy storage systems. It reads the local MQTT data of the device and lets you control it. It is a port of the official Jackery Home Assistant integration ([Jackery-Official/jackery](https://github.com/Jackery-Official/jackery), MIT) and speaks the same protocol.
 
 > Not an official Jackery product. Untested against other than my own hardware so far: the protocol code is ported 1:1 and covered by unit tests, but please report anything that behaves differently on your device.

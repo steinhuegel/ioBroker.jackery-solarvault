@@ -34,7 +34,8 @@
     "lib/",
     "main.js",
     "io-package.json",
-    "LICENSE"
+    "LICENSE",
+    "README.de.md"
   ],
   "scripts": {
     "test": "node test/protocol.test.js && node test/main.smoke.test.js",
