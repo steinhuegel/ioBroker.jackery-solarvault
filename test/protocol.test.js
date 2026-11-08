@@ -144,18 +144,9 @@ test('ongrid net: type-2 fields win over stale type-106 grid values (standby)', 
     assert.strictEqual(d.calc_home_power, 250);
 });
 
-test('home power is never negative', () => {
-    const d = calculateEnergyFlow({
-        inOngridPw: 0, outOngridPw: 300,
-        cts: [{ deviceSn: 'C1', commState: 1, TphasePw: 100, TnphasePw: 0 }],
-    });
-    // p_grid(100) - p_ong(-300) would be fine; flip: export bigger than supply
-    const f = calculateEnergyFlow({
-        inOngridPw: 0, outOngridPw: 100,
-        cts: [{ deviceSn: 'C1', commState: 1, TphasePw: 0, TnphasePw: 400 }],
-    });
-    assert.ok(d.calc_home_power >= 0);
-    assert.ok(f.calc_home_power >= 0);
+test('home power may be negative (surplus from another PV system)', () => {
+    const f = calculateEnergyFlow({ inOngridPw: 0, outOngridPw: 0, gridInPw: 0, gridOutPw: 400 });
+    assert.strictEqual(f.calc_home_power, -400);
 });
 
 test('type 23 devType 1 is an expansion battery (BP2500), not a host or plug', () => {
