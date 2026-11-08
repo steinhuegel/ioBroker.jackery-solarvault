@@ -50,6 +50,24 @@ Energy values are converted to kWh, temperature to °C. Sub-devices are created 
 | `control.reboot` | `reboot` | button, reboots the host |
 | `plug_<sn>.switch` | type 103 | only when the plug has `commMode = 1` (local); cloud plugs (`commMode = 2`) must be switched in the app |
 
+#### Additional controls (optional)
+
+Enable "Enable additional controls" in the adapter settings to get these writable states. Without it their current values are still shown read-only (`settings.*`, `status.work_mode`, `grid.max_feed_grid_power`).
+
+| State | Device field | Notes |
+| --- | --- | --- |
+| `control.workMode` | `workModel` | 2 self consumption, 4 custom, 7 tariff, 8 AI |
+| `control.defaultOutputPower` | `defaultPw` | 0-200 W in 10 W steps, fallback output of custom mode (no schedule active) |
+| `control.maxFeedGrid` | `maxFeedGrid` | export limit to the public grid, 0-2500 W in 10 W steps |
+| `control.followMeter` | `isFollowMeterPw` | only effective in custom mode |
+| `control.offGridFallback` | `offGridDown` | boolean |
+| `control.forceCharge` | `socForceChg` | boolean |
+
+### Expansion batteries and alerts
+
+- `exp_<sn>`: expansion batteries (e.g. BP2500) are detected from the energy statistics (type 23, about every 10 minutes) and provide `charge_energy`, `discharge_energy` and `available`. The device publishes neither real-time power nor a separate SOC for them; their SOC is part of the combined SOC and `battery.battery_count`.
+- `alert.*`: the topic `hb/device/<sn>/alert` is subscribed (faults, storm warning, threshold alarms): `alertId`, `recordTs`, `json`, and `trigger`, which is set to `true` on every alert message (reset it yourself in scripts).
+
 Write with `ack = false` (as usual in ioBroker). The state is confirmed with `ack = true` as soon as the device reports the new value.
 
 Differences to the Home Assistant integration: read-only duplicates of controllable values (for example the separate `AC Socket Switch` sensor) are merged into the writable `control.*` states, and enum values are numbers with a `states` mapping instead of strings.
@@ -67,4 +85,4 @@ To try it on a system, copy the directory to `/opt/iobroker/node_modules/iobroke
 
 ## License
 
-MIT. Protocol logic derived from the official Jackery Home Assistant integration, Copyright (c) 2025 Jackery (see `LICENSE`).
+MIT. Protocol logic derived from the official Jackery Home Assistant integration, Copyright (c) 2025 Jackery (see `LICENSE`). Additional findings (expansion batteries, alert topic, extra control fields, grid priority fix) taken from the community project csoscd/ha-solarvault (same MIT license).

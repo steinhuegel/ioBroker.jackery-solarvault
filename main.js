@@ -22,7 +22,7 @@ const {
     pyOr,
     firstDefined,
 } = require('./lib/protocol');
-const { SENSORS, CONTROLS, PLUG_STATES, CT_STATES } = require('./lib/datapoints');
+const { SENSORS, CONTROLS, EXTRA_CONTROLS, EXPANSION_STATES, PLUG_STATES, CT_STATES } = require('./lib/datapoints');
 
 const POLL_INTERVAL_MS = 5000;
 
@@ -34,8 +34,10 @@ const GROUP_NAMES = {
     grid: 'Grid',
     ac_socket: 'AC socket',
     energy: 'Energy flow statistics',
+    settings: 'Settings read back from the device',
     calc: 'Calculated values',
     control: 'Controls',
+    alert: 'Device alerts',
 };
 
 function isObj(v) {
@@ -156,7 +158,11 @@ class JackerySolarvault extends utils.Adapter {
             this.log.info('MQTT connected');
             this.setState('info.connection', true, true);
             for (const dev of this.devices.values()) {
-                const topics = [`${this.prefix}/device/${dev.sn}/status`, `${this.prefix}/device/${dev.sn}/event`];
+                const topics = [
+                    `${this.prefix}/device/${dev.sn}/status`,
+                    `${this.prefix}/device/${dev.sn}/event`,
+                    `${this.prefix}/device/${dev.sn}/alert`,
+                ];
                 this.client.subscribe(topics, { qos: 1 }, err => {
                     if (err) {
                         this.log.error(`Subscribe failed for ${dev.sn}: ${err.message}`);
@@ -229,6 +235,7 @@ class JackerySolarvault extends utils.Adapter {
             await this.setAvailable(dev, false);
         } else {
             await this.updateSubdevices(dev);
+            await this.updateExpansionBatteries(dev);
         }
         if (core.tokenLooksInvalid() && !dev.tokenWarned) {
             dev.tokenWarned = true;
@@ -253,6 +260,11 @@ class JackerySolarvault extends utils.Adapter {
         await dev.ready;
         this.log.silly(`${topic}: ${text}`);
 
+        if (m[1] === 'alert') {
+            await this.onAlert(dev, text);
+            return;
+        }
+
         const res = dev.core.handleMessage(text);
         if (res.reauth && !dev.tokenWarned) {
             dev.tokenWarned = true;
@@ -276,6 +288,20 @@ class JackerySolarvault extends utils.Adapter {
         }
         await this.updateMainStates(dev);
         await this.updateSubdevices(dev);
+        await this.updateExpansionBatteries(dev);
+    }
+
+    async onAlert(dev, text) {
+        const alert = dev.core.handleAlert(text);
+        if (!alert) {
+            return;
+        }
+        this.log.warn(`Device ${dev.sn} alert: id=${alert.alertId} ${JSON.stringify(alert.extra)}`);
+        const root = `${dev.idSn}.alert`;
+        await this.setStateAsync(`${root}.alertId`, alert.alertId === null ? 0 : Number(alert.alertId), true);
+        await this.setStateAsync(`${root}.recordTs`, alert.recordTs === null ? Date.now() : Number(alert.recordTs) * 1000, true);
+        await this.setStateAsync(`${root}.json`, JSON.stringify({ alertId: alert.alertId, recordTs: alert.recordTs, ...alert.extra }), true);
+        await this.setStateAsync(`${root}.trigger`, true, true);
     }
 
     // ------------------------------------------------------------------
@@ -335,6 +361,50 @@ class JackerySolarvault extends utils.Adapter {
             });
         }
         await this.ensureState(`${root}.control.reboot`, { name: 'Reboot host', type: 'boolean', role: 'button' }, { write: true, read: false });
+
+        if (this.config.enableExtraControls) {
+            for (const [id, def] of Object.entries(EXTRA_CONTROLS)) {
+                await this.ensureState(`${root}.control.${id}`, def, {
+                    write: true,
+                    ...(def.min !== undefined ? { min: def.min, max: def.max, step: def.step } : {}),
+                });
+            }
+        }
+
+        await this.ensureState(`${root}.alert.alertId`, { name: 'Last alert id', type: 'number', role: 'value' });
+        await this.ensureState(`${root}.alert.recordTs`, { name: 'Last alert time', type: 'number', role: 'date' });
+        await this.ensureState(`${root}.alert.json`, { name: 'Last alert (JSON)', type: 'string', role: 'json' });
+        await this.ensureState(`${root}.alert.trigger`, { name: 'Set to true on every alert message (reset it yourself)', type: 'boolean', role: 'indicator.alarm' }, { write: true });
+    }
+
+    async createExpansionObjects(dev, sn) {
+        const base = `${dev.idSn}.exp_${idSafe(sn)}`;
+        this.log.info(`Discovered expansion battery ${sn} on ${dev.sn}`);
+        await this.ensureDevice(base, `Jackery ${dev.sn} expansion battery ${sn}`);
+        await this.ensureState(`${base}.available`, { name: 'Available', type: 'boolean', role: 'indicator.reachable' });
+        for (const [id, def] of Object.entries(EXPANSION_STATES)) {
+            await this.ensureState(`${base}.${id}`, def);
+        }
+    }
+
+    async updateExpansionBatteries(dev) {
+        const { newBatteries, availability } = dev.core.checkExpansionBatteries();
+        for (const sn of newBatteries) {
+            await this.createExpansionObjects(dev, sn);
+        }
+        if (dev.available === false) {
+            return;
+        }
+        for (const [sn, available] of availability) {
+            const base = `${dev.idSn}.exp_${idSafe(sn)}`;
+            await this.put(`${base}.available`, available);
+            const exp = dev.core.expansionBatteries.get(sn) || {};
+            for (const [id, def] of Object.entries(EXPANSION_STATES)) {
+                if (exp[def.key] !== undefined) {
+                    await this.put(`${base}.${id}`, this.convert(def, exp[def.key]));
+                }
+            }
+        }
     }
 
     async removeSubdeviceObjects(dev, sn) {
@@ -410,6 +480,9 @@ class JackerySolarvault extends utils.Adapter {
             for (const sn of dev.core.knownSubdevices.keys()) {
                 await this.setSubAvailable(dev, sn, false);
             }
+            for (const sn of dev.core.expansionBatteries.keys()) {
+                await this.put(`${dev.idSn}.exp_${idSafe(sn)}.available`, false);
+            }
         } else {
             this.log.info(`Device ${dev.sn} is available.`);
         }
@@ -475,6 +548,13 @@ class JackerySolarvault extends utils.Adapter {
             }
             if (def.key in cache) {
                 await this.put(stateId, this.convert({ ...def, bool: undefined }, cache[def.key]));
+            }
+        }
+        if (this.config.enableExtraControls) {
+            for (const [id, def] of Object.entries(EXTRA_CONTROLS)) {
+                if (def.key in cache) {
+                    await this.put(`${root}.control.${id}`, this.convert(def, cache[def.key]));
+                }
             }
         }
     }
@@ -593,7 +673,10 @@ class JackerySolarvault extends utils.Adapter {
             }
             return;
         }
-        const def = CONTROLS[name];
+        let def = CONTROLS[name];
+        if (!def && this.config.enableExtraControls) {
+            def = EXTRA_CONTROLS[name];
+        }
         if (!def) {
             return;
         }
@@ -618,6 +701,9 @@ class JackerySolarvault extends utils.Adapter {
             if (def.states && !(value in def.states)) {
                 this.log.warn(`Invalid value for ${localId}: ${val}`);
                 return;
+            }
+            if (def.step && value % def.step !== 0) {
+                value = Math.round(value / def.step) * def.step;
             }
         }
         this.log.info(`Set ${def.param}=${value} on ${dev.sn}`);

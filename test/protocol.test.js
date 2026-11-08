@@ -138,4 +138,59 @@ test('energy flow: battery formula without system battery fields', () => {
     assert.strictEqual(d.calc_battery_charge_power, 100);
 });
 
+test('ongrid net: type-2 fields win over stale type-106 grid values (standby)', () => {
+    const d = calculateEnergyFlow({ inOngridPw: 0, outOngridPw: 0, gridInPw: 250, gridOutPw: 0, otherLoadPw: 0 });
+    // stale gridInPw must not be used as ongrid power: home load = 250 W from the grid instead of collapsing to 0
+    assert.strictEqual(d.calc_home_power, 250);
+});
+
+test('home power is never negative', () => {
+    const d = calculateEnergyFlow({
+        inOngridPw: 0, outOngridPw: 300,
+        cts: [{ deviceSn: 'C1', commState: 1, TphasePw: 100, TnphasePw: 0 }],
+    });
+    // p_grid(100) - p_ong(-300) would be fine; flip: export bigger than supply
+    const f = calculateEnergyFlow({
+        inOngridPw: 0, outOngridPw: 100,
+        cts: [{ deviceSn: 'C1', commState: 1, TphasePw: 0, TnphasePw: 400 }],
+    });
+    assert.ok(d.calc_home_power >= 0);
+    assert.ok(f.calc_home_power >= 0);
+});
+
+test('type 23 devType 1 is an expansion battery (BP2500), not a host or plug', () => {
+    const c = mk();
+    c.handleMessage(msg({ type: 23, body: { pvEgy: 100 } }));
+    c.handleMessage(msg({ type: 23, body: { deviceSn: 'BP1', devType: 1, subType: 0, inEgy: 1234, outEgy: 567 } }));
+    assert.strictEqual(c.cache.inEgy, undefined);
+    assert.strictEqual(c.expansionBatteries.get('BP1').inEgy, 1234);
+    assert.strictEqual(c.cache.pvEgy, 100);
+    let r = c.checkExpansionBatteries();
+    assert.deepStrictEqual(r.newBatteries, ['BP1']);
+    assert.strictEqual(r.availability.get('BP1'), true);
+    // null values do not overwrite real values; sn-only payload works
+    c.handleMessage(msg({ type: 23, body: { sn: 'BP1', devType: 1, inEgy: null, outEgy: 600 } }));
+    assert.strictEqual(c.expansionBatteries.get('BP1').inEgy, 1234);
+    assert.strictEqual(c.expansionBatteries.get('BP1').outEgy, 600);
+    r = c.checkExpansionBatteries();
+    assert.deepStrictEqual(r.newBatteries, []);
+    // 10 min later still available, after 31 min not
+    t += 600;
+    assert.strictEqual(c.checkExpansionBatteries().availability.get('BP1'), true);
+    t += 1300;
+    assert.strictEqual(c.checkExpansionBatteries().availability.get('BP1'), false);
+});
+
+test('alert topic parsing (wrapped and flat, invalid ignored)', () => {
+    const c = mk();
+    assert.strictEqual(c.matchTopic('hb/device/X/alert', 'hb').kind, 'alert');
+    const a = c.handleAlert(msg({ body: { alertId: 42, recordTs: 1700000000, status: 1, startTs: 5 } }));
+    assert.strictEqual(a.alertId, 42);
+    assert.strictEqual(a.recordTs, 1700000000);
+    assert.deepStrictEqual(a.extra, { status: 1, startTs: 5 });
+    assert.strictEqual(c.handleAlert(msg({ alertId: 7 })).alertId, 7);
+    assert.strictEqual(c.handleAlert(''), null);
+    assert.strictEqual(c.handleAlert('{oops'), null);
+});
+
 console.log(`\n${passed} tests passed`);

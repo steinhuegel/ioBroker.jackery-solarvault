@@ -109,6 +109,7 @@ async function flush() {
         mqttHost: '127.0.0.1',
         mqttPort: 1883,
         topicPrefix: 'hb',
+        enableExtraControls: true,
         devices: [{ enabled: true, sn: SN, token: 'TOKEN123' }],
     };
     const create = require(path.join(__dirname, '..', 'main.js'));
@@ -124,7 +125,7 @@ async function flush() {
     // connect -> subscribe + polls
     fakeClient.emit('connect');
     await flush();
-    assert.deepStrictEqual(fakeClient.subscribed, [`hb/device/${SN}/status`, `hb/device/${SN}/event`]);
+    assert.deepStrictEqual(fakeClient.subscribed, [`hb/device/${SN}/status`, `hb/device/${SN}/event`, `hb/device/${SN}/alert`]);
     const types = published.map(p => p.msg.type);
     assert.deepStrictEqual(types, [25, 105, 2, 100, 100]);
     assert.ok(published.every(p => p.topic === `hb/device/${SN}/action` && p.msg.token === 'TOKEN123'));
@@ -203,6 +204,40 @@ async function flush() {
     send('event', { type: 101, body: { devType: 6, plugs: [] } });
     await flush();
     assert.ok(![...objects.keys()].some(k => k.includes('plug_PLUG1')), 'plug objects removed');
+
+    // expansion battery
+    send('status', { type: 23, body: { deviceSn: 'BP1', devType: 1, subType: 0, inEgy: 1234, outEgy: 567 } });
+    await flush();
+    assert.strictEqual(S('exp_BP1.charge_energy').val, 12.34);
+    assert.strictEqual(S('exp_BP1.discharge_energy').val, 5.67);
+    assert.strictEqual(S('exp_BP1.available').val, true);
+
+    // additional read-only values and extra controls
+    send('status', { type: 106, body: { workModel: 4, defaultPw: 100, maxFeedGrid: 800, isFollowMeterPw: 1, stackInPw: 5, batState: 2 } });
+    await flush();
+    assert.strictEqual(S('settings.default_output_power').val, 100);
+    assert.strictEqual(S('settings.follow_meter').val, true);
+    assert.strictEqual(S('battery.stack_in_power').val, 5);
+    assert.strictEqual(S('control.workMode').val, 4);
+    assert.strictEqual(S('control.maxFeedGrid').val, 800);
+    published.length = 0;
+    await adapter.onStateChange(`${NS}.${SN}.control.workMode`, { val: 7, ack: false });
+    assert.deepStrictEqual(published[0].msg.body, { cmd: 5, rc: 1, workModel: 7 });
+    await adapter.onStateChange(`${NS}.${SN}.control.workMode`, { val: 5, ack: false });
+    assert.strictEqual(published.length, 1, 'invalid work mode not sent');
+    await adapter.onStateChange(`${NS}.${SN}.control.defaultOutputPower`, { val: 155, ack: false });
+    assert.deepStrictEqual(published[1].msg.body, { cmd: 5, rc: 1, defaultPw: 160 }); // 10 W steps
+    await adapter.onStateChange(`${NS}.${SN}.control.defaultOutputPower`, { val: 999, ack: false });
+    assert.deepStrictEqual(published[2].msg.body, { cmd: 5, rc: 1, defaultPw: 200 }); // clamped
+    await adapter.onStateChange(`${NS}.${SN}.control.forceCharge`, { val: true, ack: false });
+    assert.deepStrictEqual(published[3].msg.body, { cmd: 5, rc: 1, socForceChg: 1 });
+
+    // alert
+    fakeClient.emit('message', `hb/device/${SN}/alert`, Buffer.from(JSON.stringify({ body: { alertId: 42, recordTs: 1700000000 } })));
+    await flush();
+    assert.strictEqual(S('alert.alertId').val, 42);
+    assert.strictEqual(S('alert.trigger').val, true);
+    assert.ok(JSON.parse(S('alert.json').val).alertId === 42);
 
     // messages for other devices are ignored
     const nBefore = states.size;

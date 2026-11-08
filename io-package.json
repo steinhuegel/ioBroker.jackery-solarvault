@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "news": {
+      "0.2.0": {
+        "en": "Expansion batteries (BP2500), alert topic, new read-only values and optional extra controls, fixes from the community project csoscd/ha-solarvault",
+        "de": "Erweiterungsbatterien (BP2500), Alarm-Topic, neue Lesewerte und optionale Zusatz-Steuerungen, Korrekturen aus dem Community-Projekt csoscd/ha-solarvault"
+      },
       "0.1.0": {
         "en": "Initial release: port of the official Jackery Home Assistant integration",
         "de": "Erste Version: Portierung der offiziellen Jackery Home-Assistant-Integration"
@@ -73,6 +77,7 @@
     "mqttUser": "",
     "mqttPassword": "",
     "topicPrefix": "hb",
+    "enableExtraControls": false,
     "devices": []
   },
   "objects": [],

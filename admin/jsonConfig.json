@@ -103,6 +103,13 @@
               "visible": true
             }
           ]
+        },
+        "enableExtraControls": {
+          "type": "checkbox",
+          "label": "Enable additional controls (work mode, default output power, max grid export, follow meter, off-grid fallback, force charge)",
+          "newLine": true,
+          "xs": 12,
+          "help": "Writes to the device. Current values are always shown read-only under 'settings'. Check them against the Jackery app first."
         }
       }
     }
