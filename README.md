@@ -74,6 +74,16 @@ Write with `ack = false` (as usual in ioBroker). The state is confirmed with `ac
 
 Differences to the Home Assistant integration: read-only duplicates of controllable values (for example the separate `AC Socket Switch` sensor) are merged into the writable `control.*` states, and enum values are numbers with a `states` mapping instead of strings.
 
+## Installation
+
+From GitHub, on the ioBroker system:
+
+```
+iobroker url https://github.com/steinhuegel/ioBroker.jackery-solarvault
+```
+
+Then create an instance in Admin (or restart the existing one).
+
 ## Development
 
 ```
@@ -83,8 +93,7 @@ npm test
 
 The tests run without ioBroker (`test/protocol.test.js` for the protocol logic, `test/main.smoke.test.js` with in-memory fakes for `mqtt` and `@iobroker/adapter-core`).
 
-To try it on a system, copy the directory to `/opt/iobroker/node_modules/iobroker.jackery-solarvault`, run `npm install` there and `iobroker upload jackery-solarvault`, then add an instance in Admin. For a proper release you still need to fill in the author / repository fields in `package.json` and `io-package.json` and replace the placeholder icon.
 
 ## License
 
-MIT. Protocol logic derived from the official Jackery Home Assistant integration, Copyright (c) 2025 Jackery (see `LICENSE`). Additional findings (expansion batteries, alert topic, extra control fields, grid priority fix) taken from the community project csoscd/ha-solarvault (same MIT license).
+MIT. Protocol logic derived from the official Jackery Home Assistant integration, Copyright (c) 2025 Jackery (see `LICENSE`). Additional findings (expansion batteries, alert topic, extra control fields, grid priority fix) taken from the community project csoscd/ha-solarvault (same MIT license, https://github.com/csoscd/ha-solarvault).
