@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "news": {
+      "0.2.1": {
+        "en": "Fix: no warnings when an expansion battery is discovered",
+        "de": "Korrektur: keine Warnungen mehr beim Erkennen einer Erweiterungsbatterie"
+      },
       "0.2.0": {
         "en": "Expansion batteries (BP2500), alert topic, new read-only values and optional extra controls, fixes from the community project csoscd/ha-solarvault",
         "de": "Erweiterungsbatterien (BP2500), Alarm-Topic, neue Lesewerte und optionale Zusatz-Steuerungen, Korrekturen aus dem Community-Projekt csoscd/ha-solarvault"

@@ -389,13 +389,16 @@ class JackerySolarvault extends utils.Adapter {
 
     async updateExpansionBatteries(dev) {
         const { newBatteries, availability } = dev.core.checkExpansionBatteries();
+        dev.expReady = dev.expReady || new Map();
         for (const sn of newBatteries) {
-            await this.createExpansionObjects(dev, sn);
+            dev.expReady.set(sn, this.createExpansionObjects(dev, sn));
         }
         if (dev.available === false) {
             return;
         }
         for (const [sn, available] of availability) {
+            // a concurrent call (poll timer vs. incoming message) must wait until the objects exist
+            await dev.expReady.get(sn);
             const base = `${dev.idSn}.exp_${idSafe(sn)}`;
             await this.put(`${base}.available`, available);
             const exp = dev.core.expansionBatteries.get(sn) || {};
