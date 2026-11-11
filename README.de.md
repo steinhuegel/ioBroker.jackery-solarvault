@@ -31,8 +31,9 @@ Unterhalb von `jackery-solarvault.0.<SN>.`:
 | `solar` | Gesamtleistung und -energie, PV1 bis PV4 |
 | `grid` | Netzanschluss Ein-/Ausgangsleistung und -energie, sonstige Last, maximale Einspeisung |
 | `ac_socket` | Eingangsleistung der AC-Steckdose und Energie ein/aus |
-| `energy` | Energiefluss-Statistik (PV zu Batterie, Batterie zu Netz, ...) |
-| `settings` | vom Gerät zurückgelesene Einstellungen (nur lesend): Standardleistung, Zähler folgen, Off-Grid-Rückfall, Zwangsladen, max. Systemleistung, Standby-Schwelle, max. PV-Ladeleistung |
+| `energy` | Energiefluss-Statistik (PV zu Batterie, Batterie zu Netz, ...), CT-Bezugs-/Einspeiseenergie auf Systemebene (neuere Firmware) |
+| `network` | Ethernet verbunden, WLAN-Signal (dBm), WLAN-SSID, WLAN-/Ethernet-IP |
+| `settings` | vom Gerät zurückgelesene Einstellungen (nur lesend): Standardleistung, Zähler folgen, Off-Grid-Rückfall, Zwangsladen, max. Systemleistung, Standby-Schwellen (Wechselrichter, Netz), max. PV-Ladeleistung |
 | `calc` | mit den Formeln der Jackery-App berechnete Werte: `calc_grid_net_power`, `calc_home_power`, `calc_ac_socket_power`, `calc_batt_net_power`, Lade-/Entladeleistung |
 | `control` | schreibbare Einstellungen, siehe unten |
 | `alert` | letzte Alarmmeldung des Geräts |
@@ -51,7 +52,7 @@ Energiewerte werden in kWh umgerechnet, Temperaturen in °C. Untergeräte werden
 | `control.autoStandbyMode` | `autoStandby` | 0 ungültig, 1 Standby, 2 an |
 | `control.socChargeLimit` | `socChgLimit` | Grenzen (Standard 50-100 %) folgen `minSocChg` / `maxSocChg` vom Gerät |
 | `control.socDischargeLimit` | `socDischgLimit` | Grenzen (Standard 5-49 %) folgen `minSocDischg` / `maxSocDischg` |
-| `control.maxOutputPower` | `maxOutPw` | 0-2500 W |
+| `control.maxOutputPower` | `maxOutPw` | 0-2500 W in 10-W-Schritten |
 | `control.reboot` | `reboot` | Taster, startet das Hauptgerät neu |
 | `plug_<sn>.switch` | Typ 103 | nur wenn der Plug `commMode = 1` (lokal) hat; Cloud-Plugs (`commMode = 2`) müssen in der App geschaltet werden |
 

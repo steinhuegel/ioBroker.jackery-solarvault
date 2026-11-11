@@ -232,6 +232,18 @@ async function flush() {
     await adapter.onStateChange(`${NS}.${SN}.control.forceCharge`, { val: true, ack: false });
     assert.deepStrictEqual(published[3].msg.body, { cmd: 5, rc: 1, socForceChg: 1 });
 
+    // network values, 10 W steps for maxOutputPower
+    send('status', { type: 106, body: { ethPort: 1, wsig: -61, wname: 'MeinWLAN', wip: '192.168.178.50', eip: '', maxInvStdPw: 30, inCtEgy: 1234 } });
+    await flush();
+    assert.strictEqual(S('network.ethernet_connected').val, true);
+    assert.strictEqual(S('network.wifi_signal').val, -61);
+    assert.strictEqual(S('network.wifi_ssid').val, 'MeinWLAN');
+    assert.strictEqual(S('network.ethernet_ip').val, '');
+    assert.strictEqual(S('settings.max_inverter_standby_power').val, 30);
+    assert.strictEqual(S('energy.ct_import_energy').val, 12.34);
+    await adapter.onStateChange(`${NS}.${SN}.control.maxOutputPower`, { val: 455, ack: false });
+    assert.strictEqual(published[published.length - 1].msg.body.maxOutPw, 460);
+
     // alert
     fakeClient.emit('message', `hb/device/${SN}/alert`, Buffer.from(JSON.stringify({ body: { alertId: 42, recordTs: 1700000000 } })));
     await flush();

@@ -31,8 +31,10 @@ Below `jackery-solarvault.0.<SN>.`:
 | `solar` | total power and energy, PV1 to PV4 |
 | `grid` | grid port in/out power and energy, other load, max feed-in |
 | `ac_socket` | AC socket input power and in/out energy |
-| `energy` | energy flow statistics (PV to battery, battery to grid, ...) |
+| `energy` | energy flow statistics (PV to battery, battery to grid, ...), system-level CT import/export energy (newer firmware) |
+| `settings` | read-back settings (read-only): default output power, follow meter, off-grid fallback, force charge, max system output, standby thresholds (inverter, grid), max PV charge power |
 | `calc` | values calculated with the Jackery app formulas: `calc_grid_net_power`, `calc_home_power`, `calc_ac_socket_power`, `calc_batt_net_power`, charge/discharge power |
+| `network` | Ethernet connected, WiFi signal (dBm), WiFi SSID, WiFi / Ethernet IP |
 | `control` | writable settings, see below |
 | `plug_<sn>` | Smart Plug: power, energy, switch, `commMode`, `mqttControllable`, `available` (up to 10) |
 | `ct_<sn>` | Smart CT / meter: total, phase A/B/C forward and reverse power, forward/reverse energy, sub type |
@@ -48,7 +50,7 @@ Energy values are converted to kWh, temperature to °C. Sub-devices are created 
 | `control.autoStandbyMode` | `autoStandby` | 0 invalid, 1 standby, 2 on |
 | `control.socChargeLimit` | `socChgLimit` | limits (default 50-100 %) follow `minSocChg` / `maxSocChg` from the device |
 | `control.socDischargeLimit` | `socDischgLimit` | limits (default 5-49 %) follow `minSocDischg` / `maxSocDischg` |
-| `control.maxOutputPower` | `maxOutPw` | 0-2500 W |
+| `control.maxOutputPower` | `maxOutPw` | 0-2500 W in 10 W steps |
 | `control.reboot` | `reboot` | button, reboots the host |
 | `plug_<sn>.switch` | type 103 | only when the plug has `commMode = 1` (local); cloud plugs (`commMode = 2`) must be switched in the app |
 

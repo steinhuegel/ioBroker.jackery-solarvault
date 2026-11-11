@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "news": {
+      "0.2.2": {
+        "en": "New read-only values: network (Ethernet/WiFi), standby limits, CT energy; maxOutputPower in 10 W steps",
+        "de": "Neue Lesewerte: Netzwerk (Ethernet/WLAN), Standby-Grenzen, CT-Energie; maxOutputPower in 10-W-Schritten"
+      },
       "0.2.1": {
         "en": "Fix: no warnings when an expansion battery is discovered",
         "de": "Korrektur: keine Warnungen mehr beim Erkennen einer Erweiterungsbatterie"

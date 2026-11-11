@@ -34,6 +34,7 @@ const GROUP_NAMES = {
     grid: 'Grid',
     ac_socket: 'AC socket',
     energy: 'Energy flow statistics',
+    network: 'Network',
     settings: 'Settings read back from the device',
     calc: 'Calculated values',
     control: 'Controls',
@@ -502,6 +503,9 @@ class JackerySolarvault extends utils.Adapter {
     }
 
     convert(def, value) {
+        if (def.type === 'string') {
+            return value === null || value === undefined ? undefined : String(value);
+        }
         if (def.type === 'boolean') {
             if (typeof value === 'boolean') {
                 return value;
