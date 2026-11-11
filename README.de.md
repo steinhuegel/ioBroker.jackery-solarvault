@@ -40,6 +40,7 @@ Unterhalb von `jackery-solarvault.0.<SN>.`:
 | `plug_<sn>` | Smart Plug: Leistung, Energie, Schalter, `commMode`, `mqttControllable`, `available` (bis zu 10) |
 | `ct_<sn>` | Smart CT / Zähler: Gesamt-, Phase-A/B/C-Bezugs- und -Einspeiseleistung, Bezugs-/Einspeiseenergie, Subtyp |
 | `exp_<sn>` | Erweiterungsbatterie (z. B. BP2500): Lade- und Entladeenergie |
+| `collector_<sn>` | Vom SolarVault erkannter Zähler-Leser (z. B. EcoTracker, aus der `collectors`-Liste): Name, Bezugs-/Einspeiseleistung, IP, verbunden, verfügbar. Nur zur Information |
 
 Energiewerte werden in kWh umgerechnet, Temperaturen in °C. Untergeräte werden automatisch angelegt, sobald sie auftauchen, und entfernt, wenn sie in der App entkoppelt werden. Untergeräte, die länger als 60 s schweigen, bekommen `available = false`; dasselbe gilt für das Hauptgerät (`info.available`).
 

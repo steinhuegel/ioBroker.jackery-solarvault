@@ -38,6 +38,8 @@ Below `jackery-solarvault.0.<SN>.`:
 | `control` | writable settings, see below |
 | `plug_<sn>` | Smart Plug: power, energy, switch, `commMode`, `mqttControllable`, `available` (up to 10) |
 | `ct_<sn>` | Smart CT / meter: total, phase A/B/C forward and reverse power, forward/reverse energy, sub type |
+| `exp_<sn>` | Expansion battery (e.g. BP2500): charge and discharge energy, available |
+| `collector_<sn>` | Smart meter reader seen by the SolarVault (e.g. EcoTracker, from the `collectors` list): name, import/export power, IP, connected, available. Shown for information only |
 
 Energy values are converted to kWh, temperature to °C. Sub-devices are created automatically when they show up and removed when they are unbound in the app. Sub-devices that have been silent for more than 60 s get `available = false`; the same applies to the host (`info.available`).
 
