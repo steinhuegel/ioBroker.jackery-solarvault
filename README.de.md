@@ -84,7 +84,7 @@ Hinweis zu `calc.calc_home_power`: Der Wert ist nicht auf 0 begrenzt. Mit einer 
 
 ### Fehlersuche
 
-Mit „Log raw MQTT messages“ in den Adapter-Einstellungen schreibt der Adapter jede empfangene Nachricht auf Info-Ebene ins Log (`RAW status: {...}`). Token, WLAN-Name und deine Seriennummer werden automatisch maskiert, die Zeilen lassen sich also in einem Forum oder GitHub-Issue posten. Danach wieder ausschalten.
+Mit „Log raw MQTT messages“ in den Adapter-Einstellungen schreibt der Adapter jede empfangene Nachricht auf Info-Ebene ins Log (`RAW status: {...}`). Token, WLAN-Name, IP-/MAC-Adressen und deine Seriennummer werden automatisch maskiert, die Zeilen lassen sich also in einem Forum oder GitHub-Issue posten. Danach wieder ausschalten.
 
 ## Installation
 

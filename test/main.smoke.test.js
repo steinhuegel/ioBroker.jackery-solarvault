@@ -249,13 +249,13 @@ async function flush() {
     const infoLog = [];
     const origInfo = adapter.log.info;
     adapter.log.info = (m) => { infoLog.push(m); };
-    send('status', { type: 2, token: '12345678', body: { wname: 'Geheim', deviceSn: SN } });
+    send('status', { type: 2, token: '12345678', body: { wname: 'Geheim', eip: '192.168.1.5', emac: 'AA:BB', deviceSn: SN } });
     await flush();
     adapter.log.info = origInfo;
     adapter.config.logRawMessages = false;
     const rawLine = infoLog.find((l) => l.startsWith('RAW status'));
     assert.ok(rawLine, 'raw line logged');
-    assert.ok(!rawLine.includes('12345678') && !rawLine.includes('Geheim') && !rawLine.includes(SN), rawLine);
+    assert.ok(!rawLine.includes('12345678') && !rawLine.includes('Geheim') && !rawLine.includes('192.168.1.5') && !rawLine.includes('AA:BB') && !rawLine.includes(SN), rawLine);
 
     // alert
     fakeClient.emit('message', `hb/device/${SN}/alert`, Buffer.from(JSON.stringify({ body: { alertId: 42, recordTs: 1700000000 } })));

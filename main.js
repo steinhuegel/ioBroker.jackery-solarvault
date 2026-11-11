@@ -54,11 +54,11 @@ function round(n, digits = 4) {
     return Math.round(n * f) / f;
 }
 
-/** Mask token, WiFi name and the own serial number in a raw payload (for logs that are copied into forums). */
+/** Mask token, WiFi name, IP/MAC addresses and the own serial number in a raw payload (for logs that are copied into forums). */
 function redactRaw(text, sn) {
     return String(text)
         .replace(/("token"\s*:\s*)("[^"]*"|\d+)/g, '$1"XXXX"')
-        .replace(/("wname"\s*:\s*)"[^"]*"/g, '$1"XXXX"')
+        .replace(/("(?:wname|wip|eip|emac)"\s*:\s*)"[^"]*"/g, '$1"XXXX"')
         .split(sn)
         .join('XXXX');
 }

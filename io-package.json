@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "news": {
+      "0.2.4": {
+        "en": "Raw log masking also covers IP and MAC addresses",
+        "de": "Maskierung im Rohdaten-Log umfasst jetzt auch IP- und MAC-Adressen"
+      },
       "0.2.3": {
         "en": "Option to log raw MQTT messages (masked) for troubleshooting",
         "de": "Option zum Protokollieren der MQTT-Rohdaten (maskiert) zur Fehlersuche"

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.jackery-solarvault",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "ioBroker adapter for Jackery SolarVault 3 series (local MQTT)",
   "author": {
     "name": "steinhuegel"
