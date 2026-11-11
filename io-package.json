@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "news": {
+      "0.2.5": {
+        "en": "Smart meter reader (e.g. EcoTracker) from the collectors list is shown as an information device",
+        "de": "Zähler-Leser (z. B. EcoTracker) aus der collectors-Liste wird als Info-Gerät angezeigt"
+      },
       "0.2.4": {
         "en": "Raw log masking also covers IP and MAC addresses",
         "de": "Maskierung im Rohdaten-Log umfasst jetzt auch IP- und MAC-Adressen"

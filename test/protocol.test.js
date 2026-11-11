@@ -184,4 +184,16 @@ test('alert topic parsing (wrapped and flat, invalid ignored)', () => {
     assert.strictEqual(c.handleAlert('{oops'), null);
 });
 
+test('type 101 collectors (EcoTracker) are tracked as meter readers', () => {
+    const c = mk();
+    c.handleMessage(msg({ type: 101, body: { cmd: 110, devType: 2, cts: [], collectors: [{ deviceSn: 'ECO1', devType: 4, subType: 1, commState: 1, scanName: 'ecotracker', wip: '192.168.1.2', outPw: 0, inPw: 345 }] } }));
+    let r = c.checkCollectors();
+    assert.deepStrictEqual(r.newCollectors, ['ECO1']);
+    assert.strictEqual(c.collectors.get('ECO1').inPw, 345);
+    assert.strictEqual(r.availability.get('ECO1'), true);
+    assert.deepStrictEqual(c.checkCollectors().newCollectors, []);
+    t += 200;
+    assert.strictEqual(c.checkCollectors().availability.get('ECO1'), false);
+});
+
 console.log(`\n${passed} tests passed`);

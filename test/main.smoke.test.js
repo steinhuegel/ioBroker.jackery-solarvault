@@ -232,6 +232,14 @@ async function flush() {
     await adapter.onStateChange(`${NS}.${SN}.control.forceCharge`, { val: true, ack: false });
     assert.deepStrictEqual(published[3].msg.body, { cmd: 5, rc: 1, socForceChg: 1 });
 
+    // meter reader (EcoTracker)
+    send('event', { type: 101, body: { cmd: 110, devType: 2, cts: [], collectors: [{ deviceSn: 'ECO1', devType: 4, subType: 1, commState: 1, scanName: 'ecotracker', wip: '192.168.1.2', outPw: 0, inPw: 345 }] } });
+    await flush();
+    assert.strictEqual(S('collector_ECO1.name').val, 'ecotracker');
+    assert.strictEqual(S('collector_ECO1.import_power').val, 345);
+    assert.strictEqual(S('collector_ECO1.connected').val, true);
+    assert.strictEqual(S('collector_ECO1.available').val, true);
+
     // network values, 10 W steps for maxOutputPower
     send('status', { type: 106, body: { ethPort: 1, wsig: -61, wname: 'MeinWLAN', wip: '192.168.178.50', eip: '', maxInvStdPw: 30, inCtEgy: 1234 } });
     await flush();

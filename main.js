@@ -22,7 +22,7 @@ const {
     pyOr,
     firstDefined,
 } = require('./lib/protocol');
-const { SENSORS, CONTROLS, EXTRA_CONTROLS, EXPANSION_STATES, PLUG_STATES, CT_STATES } = require('./lib/datapoints');
+const { SENSORS, CONTROLS, EXTRA_CONTROLS, EXPANSION_STATES, COLLECTOR_STATES, PLUG_STATES, CT_STATES } = require('./lib/datapoints');
 
 const POLL_INTERVAL_MS = 5000;
 
@@ -246,6 +246,7 @@ class JackerySolarvault extends utils.Adapter {
         } else {
             await this.updateSubdevices(dev);
             await this.updateExpansionBatteries(dev);
+            await this.updateCollectors(dev);
         }
         if (core.tokenLooksInvalid() && !dev.tokenWarned) {
             dev.tokenWarned = true;
@@ -302,6 +303,7 @@ class JackerySolarvault extends utils.Adapter {
         await this.updateMainStates(dev);
         await this.updateSubdevices(dev);
         await this.updateExpansionBatteries(dev);
+            await this.updateCollectors(dev);
     }
 
     async onAlert(dev, text) {
@@ -397,6 +399,39 @@ class JackerySolarvault extends utils.Adapter {
         await this.ensureState(`${base}.available`, { name: 'Available', type: 'boolean', role: 'indicator.reachable' });
         for (const [id, def] of Object.entries(EXPANSION_STATES)) {
             await this.ensureState(`${base}.${id}`, def);
+        }
+    }
+
+    async createCollectorObjects(dev, sn) {
+        const base = `${dev.idSn}.collector_${idSafe(sn)}`;
+        const name = (dev.core.collectors.get(sn) || {}).scanName || 'meter reader';
+        this.log.info(`Discovered meter reader ${name} (${sn}) on ${dev.sn}`);
+        await this.ensureDevice(base, `Jackery ${dev.sn} meter reader ${name}`);
+        await this.ensureState(`${base}.available`, { name: 'Available', type: 'boolean', role: 'indicator.reachable' });
+        for (const [id, def] of Object.entries(COLLECTOR_STATES)) {
+            await this.ensureState(`${base}.${id}`, def);
+        }
+    }
+
+    async updateCollectors(dev) {
+        const { newCollectors, availability } = dev.core.checkCollectors();
+        dev.collReady = dev.collReady || new Map();
+        for (const sn of newCollectors) {
+            dev.collReady.set(sn, this.createCollectorObjects(dev, sn));
+        }
+        for (const [sn, available] of availability) {
+            await dev.collReady.get(sn);
+            const base = `${dev.idSn}.collector_${idSafe(sn)}`;
+            await this.put(`${base}.available`, dev.available === false ? false : available);
+            if (dev.available === false) {
+                continue;
+            }
+            const item = dev.core.collectors.get(sn) || {};
+            for (const [id, def] of Object.entries(COLLECTOR_STATES)) {
+                if (item[def.key] !== undefined) {
+                    await this.put(`${base}.${id}`, this.convert(def, item[def.key]));
+                }
+            }
         }
     }
 
