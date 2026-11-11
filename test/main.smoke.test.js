@@ -244,6 +244,19 @@ async function flush() {
     await adapter.onStateChange(`${NS}.${SN}.control.maxOutputPower`, { val: 455, ack: false });
     assert.strictEqual(published[published.length - 1].msg.body.maxOutPw, 460);
 
+    // raw logging is masked
+    adapter.config.logRawMessages = true;
+    const infoLog = [];
+    const origInfo = adapter.log.info;
+    adapter.log.info = (m) => { infoLog.push(m); };
+    send('status', { type: 2, token: '12345678', body: { wname: 'Geheim', deviceSn: SN } });
+    await flush();
+    adapter.log.info = origInfo;
+    adapter.config.logRawMessages = false;
+    const rawLine = infoLog.find((l) => l.startsWith('RAW status'));
+    assert.ok(rawLine, 'raw line logged');
+    assert.ok(!rawLine.includes('12345678') && !rawLine.includes('Geheim') && !rawLine.includes(SN), rawLine);
+
     // alert
     fakeClient.emit('message', `hb/device/${SN}/alert`, Buffer.from(JSON.stringify({ body: { alertId: 42, recordTs: 1700000000 } })));
     await flush();

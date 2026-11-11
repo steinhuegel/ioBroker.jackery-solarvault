@@ -110,6 +110,13 @@
           "newLine": true,
           "xs": 12,
           "help": "Writes to the device. Current values are always shown read-only under 'settings'. Check them against the Jackery app first."
+        },
+        "logRawMessages": {
+          "type": "checkbox",
+          "label": "Log raw MQTT messages (token, WiFi name and serial number are masked)",
+          "newLine": true,
+          "xs": 12,
+          "help": "Writes every received message to the log at info level. For troubleshooting only, switch it off again afterwards."
         }
       }
     }

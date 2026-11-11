@@ -54,6 +54,15 @@ function round(n, digits = 4) {
     return Math.round(n * f) / f;
 }
 
+/** Mask token, WiFi name and the own serial number in a raw payload (for logs that are copied into forums). */
+function redactRaw(text, sn) {
+    return String(text)
+        .replace(/("token"\s*:\s*)("[^"]*"|\d+)/g, '$1"XXXX"')
+        .replace(/("wname"\s*:\s*)"[^"]*"/g, '$1"XXXX"')
+        .split(sn)
+        .join('XXXX');
+}
+
 class JackerySolarvault extends utils.Adapter {
     /** @param {Partial<utils.AdapterOptions>} [options] */
     constructor(options) {
@@ -260,6 +269,9 @@ class JackerySolarvault extends utils.Adapter {
         }
         await dev.ready;
         this.log.silly(`${topic}: ${text}`);
+        if (this.config.logRawMessages) {
+            this.log.info(`RAW ${m[1]}: ${redactRaw(text, dev.sn)}`);
+        }
 
         if (m[1] === 'alert') {
             await this.onAlert(dev, text);

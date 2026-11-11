@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "news": {
+      "0.2.3": {
+        "en": "Option to log raw MQTT messages (masked) for troubleshooting",
+        "de": "Option zum Protokollieren der MQTT-Rohdaten (maskiert) zur Fehlersuche"
+      },
       "0.2.2": {
         "en": "New read-only values: network (Ethernet/WiFi), standby limits, CT energy; maxOutputPower in 10 W steps",
         "de": "Neue Lesewerte: Netzwerk (Ethernet/WLAN), Standby-Grenzen, CT-Energie; maxOutputPower in 10-W-Schritten"
@@ -86,6 +90,7 @@
     "mqttPassword": "",
     "topicPrefix": "hb",
     "enableExtraControls": false,
+    "logRawMessages": false,
     "devices": []
   },
   "objects": [],

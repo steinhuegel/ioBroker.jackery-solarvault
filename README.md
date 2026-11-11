@@ -86,6 +86,10 @@ iobroker url https://github.com/steinhuegel/ioBroker.jackery-solarvault
 
 Then create an instance in Admin (or restart the existing one).
 
+### Troubleshooting
+
+Enable "Log raw MQTT messages" in the adapter settings to write every received message to the log at info level (`RAW status: {...}`). Token, WiFi name and your serial number are masked automatically, so the lines can be pasted into a forum or GitHub issue. Switch it off again afterwards.
+
 ## Development
 
 ```
