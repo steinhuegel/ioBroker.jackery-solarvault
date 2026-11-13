@@ -27,7 +27,7 @@ Below `jackery-solarvault.0.<SN>.`:
 | --- | --- |
 | `info` | `available`, `model`, `softver`, `serial`, `lastUpdate`, `tokenSuspect` |
 | `status` | operating status (`states` map), work mode, on-grid / CT / meter link status, AC socket status |
-| `battery` | SOC, average SOC, charge/discharge power, temperature (°C), battery count, charge/discharge energy (kWh) |
+| `battery` | SOC, average SOC, charge/discharge power, temperature (°C), min/max cell temperature and cell voltage (newer firmware, scale unconfirmed), battery count, charge/discharge energy (kWh), state, stack power |
 | `solar` | total power and energy, PV1 to PV4 |
 | `grid` | grid port in/out power and energy, other load, max feed-in |
 | `ac_socket` | AC socket input power and in/out energy |

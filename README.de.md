@@ -27,7 +27,7 @@ Unterhalb von `jackery-solarvault.0.<SN>.`:
 | --- | --- |
 | `info` | `available`, `model`, `softver`, `serial`, `lastUpdate`, `tokenSuspect` |
 | `status` | Betriebsstatus (mit `states`-Zuordnung), Arbeitsmodus, Status von Netz / CT / Zähleranbindung, Status der AC-Steckdose |
-| `battery` | SOC, durchschnittlicher SOC, Lade-/Entladeleistung, Temperatur (°C), Anzahl Batterien, Lade-/Entladeenergie (kWh), Zustand, Stack-Leistungen |
+| `battery` | SOC, durchschnittlicher SOC, Lade-/Entladeleistung, Temperatur (°C), minimale/maximale Zelltemperatur und Zellspannung (neuere Firmware, Skalierung unbestätigt), Anzahl Batterien, Lade-/Entladeenergie (kWh), Zustand, Stack-Leistungen |
 | `solar` | Gesamtleistung und -energie, PV1 bis PV4 |
 | `grid` | Netzanschluss Ein-/Ausgangsleistung und -energie, sonstige Last, maximale Einspeisung |
 | `ac_socket` | Eingangsleistung der AC-Steckdose und Energie ein/aus |

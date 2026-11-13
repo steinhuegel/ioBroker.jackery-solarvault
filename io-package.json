@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "jackery-solarvault",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "news": {
+      "0.2.6": {
+        "en": "New read-only values: min/max cell temperature and cell voltage (newer firmware)",
+        "de": "Neue Lesewerte: minimale/maximale Zelltemperatur und Zellspannung (neuere Firmware)"
+      },
       "0.2.5": {
         "en": "Smart meter reader (e.g. EcoTracker) from the collectors list is shown as an information device",
         "de": "Zähler-Leser (z. B. EcoTracker) aus der collectors-Liste wird als Info-Gerät angezeigt"

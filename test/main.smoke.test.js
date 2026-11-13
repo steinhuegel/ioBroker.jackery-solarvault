@@ -232,6 +232,13 @@ async function flush() {
     await adapter.onStateChange(`${NS}.${SN}.control.forceCharge`, { val: true, ack: false });
     assert.deepStrictEqual(published[3].msg.body, { cmd: 5, rc: 1, socForceChg: 1 });
 
+    // cell values (firmware 2026-11)
+    send('status', { type: 2, body: { maxCellTemp: 191, minCellTemp: 171, maxCellVolt: 33290, minCellVolt: 33240 } });
+    await flush();
+    assert.strictEqual(S('battery.battery_cell_temp_max').val, 19.1);
+    assert.strictEqual(S('battery.battery_cell_voltage_max').val, 3.329);
+    assert.strictEqual(S('battery.battery_cell_voltage_min').val, 3.324);
+
     // meter reader (EcoTracker)
     send('event', { type: 101, body: { cmd: 110, devType: 2, cts: [], collectors: [{ deviceSn: 'ECO1', devType: 4, subType: 1, commState: 1, scanName: 'ecotracker', wip: '192.168.1.2', outPw: 0, inPw: 345 }] } });
     await flush();
